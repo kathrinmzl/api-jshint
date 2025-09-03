@@ -6,8 +6,14 @@ const API_URL = "https://ci-jshint.herokuapp.com/api";
 // https://getbootstrap.com/docs/5.0/components/modal/#via-javascript
 const resultsModal = new bootstrap.Modal(document.getElementById("resultsModal"));
 
+// Event listeners
+// status button
 document.getElementById("status").addEventListener("click", e => getStatus(e));
 
+// submit button
+document.getElementById("submit").addEventListener("click", e => postForm(e));
+
+// ---- GET (status button) ----
 // getStatus()
 // Make GET request to the API URL with the API key
 // Pass the returned data to a display function
@@ -54,4 +60,65 @@ function displayStatus(data){
     // Show the Modal
     resultsModal.show();
 
+}
+
+// ---- POST (submit button) ----
+// postForm()
+// Get form data
+// post form data to API
+async function postForm(e){
+    // capture all of the fields of the HTML form and return it as an object
+    // then give this object to "fetch" without needing to do further processing
+    // https://developer.mozilla.org/en-US/docs/Web/API/FormData
+    const form = new FormData(document.getElementById("checksform"));
+
+    // Check if form entries are setup correctly
+    // for (let entry of form.entries()){
+    //     console.log(entry);
+    // }
+
+    // Fetch response object
+    const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+        "Authorization": API_KEY,
+        },
+        body: form 
+    })
+
+    // Parse response as JSON object
+    const data = await response.json();
+
+    // Display data or return error
+    if(response.ok){
+        // console.log(data);
+        displayErrors(data);
+    } else {
+        // JS error handler
+        throw new Error(data.error);
+    }
+}
+
+function displayErrors(data){
+    let heading = `JSHint results for ${data.file}`;
+
+    // set classes in case we want to style the results later
+    if (data.total_errors === 0) {
+        results = `<div class="no_errors">No errors reported!</div>`;
+    } else {
+        results = `<div>Total Errors: <span class="error_count">${data.total_errors}</span></div>`;
+        // Loop through full error list
+        for (let error of data.error_list) {
+            results += `<div>At line <span class="line">${error.line}</span>, `;
+            results += `column <span class="column">${error.col}:</span></div>`;
+            results += `<div class="error">${error.error}</div>`;
+        }
+    }
+
+    // Set content to modal elements
+    document.getElementById("resultsModalTitle").innerText = heading;
+    document.getElementById("results-content").innerHTML = results;
+    
+    // Show the Modal
+    resultsModal.show();
 }
