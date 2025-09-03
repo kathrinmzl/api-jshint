@@ -63,6 +63,7 @@ function displayStatus(data){
 }
 
 // ---- POST (submit button) ----
+
 // postForm()
 // Get form data
 // post form data to API
@@ -70,7 +71,7 @@ async function postForm(e){
     // capture all of the fields of the HTML form and return it as an object
     // then give this object to "fetch" without needing to do further processing
     // https://developer.mozilla.org/en-US/docs/Web/API/FormData
-    const form = new FormData(document.getElementById("checksform"));
+    const form = processOptions(new FormData(document.getElementById("checksform")));
 
     // Check if form entries are setup correctly
     // for (let entry of form.entries()){
@@ -97,6 +98,24 @@ async function postForm(e){
         // JS error handler
         throw new Error(data.error);
     }
+}
+
+// Make sure "options" are posted in the right format (comma separated list)
+function processOptions(form){
+    let optionsArray = [];
+
+    for ( let entry of form.entries()){
+        if(entry[0] === "options"){
+            // if entry = "options", push value into optionsArray
+            optionsArray.push(entry[1]);
+        }
+    }
+    // Delete all options entries
+    form.delete("options");
+    // Add one new options array
+    form.append("options", optionsArray.join())
+    
+    return form;
 }
 
 function displayErrors(data){
