@@ -40,6 +40,7 @@ async function getStatus(e){
         displayStatus(data);
     } else {
         // JS error handler
+        displayException(data);
         throw new Error(data.error);
     }
 }
@@ -96,6 +97,8 @@ async function postForm(e){
         displayErrors(data);
     } else {
         // JS error handler
+        // console.log(data);
+        displayException(data);
         throw new Error(data.error);
     }
 }
@@ -139,5 +142,22 @@ function displayErrors(data){
     document.getElementById("results-content").innerHTML = results;
     
     // Show the Modal
+    resultsModal.show();
+}
+
+// ---- Exception Handling ----
+// displayException()
+// Exceptions are provided in this format:
+// {"error":"No or invalid API key","error_no":3,"status_code":403}
+function displayException(data){
+    let heading = "An exception occured";
+
+    let results = `<div>The API returned status code ${data.status_code}</div>`;
+    results += `<div class="error-no">Error number: ${data.error_no}</div>`;
+    results += `<div class="error-text">Error text: ${data.error}</div>`;
+
+    document.getElementById("resultsModalTitle").innerText = heading;
+    document.getElementById("results-content").innerHTML = results;
+    
     resultsModal.show();
 }
