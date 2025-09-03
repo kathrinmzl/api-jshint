@@ -30,9 +30,28 @@ async function getStatus(e){
     // If the request has gone well, the "ok" property of the response object
     // is set to "true", otherwise "false"
     if(response.ok){
-        console.log(data.expiry);
+        // console.log(data);
+        displayStatus(data);
     } else {
         // JS error handler
         throw new Error(data.error);
     }
+}
+
+// displayStatus()
+// set the heading text to API key status
+// set the body  text to, "your key is valid until" and the date
+// show the modal
+function displayStatus(data){
+    // Set content to header and body of the modal
+    let heading = "API Key Status";
+    let results = `<div>Your key is valid until</div>`;
+    results += `<div class="key-status">${data.expiry}</div>`;
+
+    document.getElementById("resultsModalTitle").innerText = heading;
+    document.getElementById("results-content").innerHTML = results;
+    
+    // Show the Modal
+    resultsModal.show();
+
 }
